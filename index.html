@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Informasi Geografis (SIG): QGIS & ArcGIS</title>
+    <!-- Memuat Tailwind CSS untuk styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Memuat font Inter dari Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Gaya dasar untuk font dan warna latar belakang */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        /* Gaya kustom untuk Hero Section yang diambil dari index2.html */
+        .hero-section {
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Indonesia_location_map.svg/1200px-Indonesia_location_map.svg.png');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 8rem 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+            border-radius: 0 0 1rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        /* Menyembunyikan semua section konten secara default */
+        main section {
+            display: none;
+        }
+        /* Menampilkan section yang memiliki class 'active' */
+        main section.active {
+            display: block;
+        }
+        /* Gaya untuk efek hover pada card */
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        /* Gaya untuk pesan notifikasi */
+        .notification {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            color: white;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .notification.show {
+            opacity: 1;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 20px;
+            height: 20px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+        }
+        @-webkit-keyframes spin {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigasi -->
+    <header class="bg-emerald-800 text-white p-4 sticky top-0 z-50 shadow-md">
+        <nav class="container mx-auto flex flex-col sm:flex-row justify-between items-center">
+            <!-- Judul website, disesuaikan untuk layar kecil -->
+            <h1 class="text-2xl sm:text-3xl font-bold mb-2 sm:mb-0 text-center sm:text-left">Mata Kuliah SIG</h1>
+            <!-- Navigasi, disesuaikan untuk layar kecil -->
+            <ul class="flex flex-wrap justify-center sm:justify-end space-x-4 sm:space-x-6 text-sm sm:text-base">
+                <li><a href="#home" class="nav-link hover:text-emerald-200 transition duration-300">Home</a></li>
+                <li><a href="#qgis" class="nav-link hover:text-emerald-200 transition duration-300">QGIS</a></li>
+                <li><a href="#arcgis" class="nav-link hover:text-emerald-200 transition duration-300">ArcGIS</a></li>
+                <li><a href="#tutorial" class="nav-link hover:text-emerald-200 transition duration-300">Tutorial</a></li>
+                <li><a href="#kontak" class="nav-link hover:text-emerald-200 transition duration-300">Kontak</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Konten Utama Website -->
+    <main class="py-12 container mx-auto">
+        <!-- Home Section: Menggabungkan hero dan pilar utama dari kedua file -->
+        <section id="home" class="active">
+            <!-- Hero Section dari SIG.html -->
+            <div class="bg-emerald-700 text-white py-20 rounded-lg mx-auto w-11/12 shadow-lg mb-12">
+                <div class="container mx-auto text-center">
+                    <h2 class="text-4xl sm:text-5xl font-extrabold mb-4">Membuka Wawasan Geospasial dengan QGIS & ArcGIS</h2>
+                    <p class="text-lg sm:text-xl max-w-3xl mx-auto mb-8">Pelajari dasar-dasar pemetaan, analisis data spasial, dan pembuatan peta profesional untuk kebutuhan geografi modern.</p>
+                    <!-- Tombol ini sekarang mengarah ke bagian pilar utama -->
+                    <a href="#pilar-utama" class="bg-white text-emerald-700 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-gray-200 transition duration-300">Mulai Jelajahi</a>
+                </div>
+            </div>
+
+            <div class="container mx-auto p-6 bg-white rounded-lg shadow-lg">
+                <!-- Pilar Utama dari index2.html -->
+                <div id="pilar-utama" class="text-center mb-10">
+                    <h3 class="text-3xl font-bold text-blue-800 mb-4">Pilar Utama dalam Analisis Geospasial</h3>
+                    <p class="text-lg text-gray-700">Kami membahas dua perangkat lunak SIG terkemuka yang memberdayakan para profesional dan peneliti.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Card 1: Pengantar SIG -->
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl shadow-md card-hover transition duration-300">
+                        <h3 class="text-2xl font-bold text-blue-700 mb-3">Dasar-dasar Sistem Informasi Geografis</h3>
+                        <p class="text-gray-800">Pahami konsep inti SIG, mulai dari pengumpulan data, analisis spasial, hingga visualisasi peta yang informatif.</p>
+                    </div>
+                    <!-- Card 2: QGIS -->
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl shadow-md card-hover transition duration-300">
+                        <h3 class="text-2xl font-bold text-green-700 mb-3">Mengenal QGIS: Solusi Open Source</h3>
+                        <p class="text-gray-800">Pelajari keunggulan QGIS sebagai perangkat lunak SIG gratis dan sumber terbuka yang powerful untuk berbagai kebutuhan pemetaan.</p>
+                        <a href="#qgis" class="inline-block mt-4 text-green-600 hover:text-green-800 font-semibold nav-link">Lihat Detail QGIS &rarr;</a>
+                    </div>
+                    <!-- Card 3: ArcGIS -->
+                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl shadow-md card-hover transition duration-300">
+                        <h3 class="text-2xl font-bold text-purple-700 mb-3">ArcGIS: Platform Profesional Terdepan</h3>
+                        <p class="text-gray-800">Temukan kekuatan ArcGIS, platform SIG komersial yang komprehensif untuk solusi geospasial tingkat lanjut.</p>
+                        <a href="#arcgis" class="inline-block mt-4 text-purple-600 hover:text-purple-800 font-semibold nav-link">Lihat Detail ArcGIS &rarr;</a>
+                    </div>
+                    <!-- Card 4: Aplikasi SIG -->
+                    <div class="bg-gradient-to-br from-red-50 to-red-100 p-6 rounded-xl shadow-md card-hover transition duration-300">
+                        <h3 class="text-2xl font-bold text-red-700 mb-3">Aplikasi SIG dalam Berbagai Bidang</h3>
+                        <p class="text-gray-800">Lihat bagaimana SIG diterapkan dalam perencanaan kota, lingkungan, pertanian, mitigasi bencana, dan banyak lagi.</p>
+                    </div>
+                    <!-- Card 5: Sumber Daya Belajar -->
+                    <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-xl shadow-md card-hover transition duration-300">
+                        <h3 class="text-2xl font-bold text-yellow-700 mb-3">Sumber Daya & Tutorial</h3>
+                        <p class="text-gray-800">Temukan tautan ke dokumentasi, tutorial, dan komunitas untuk membantu Anda menguasai QGIS dan ArcGIS.</p>
+                        <a href="#tutorial" class="inline-block mt-4 text-yellow-600 hover:text-yellow-800 font-semibold nav-link">Lihat Tutorial &rarr;</a>
+                    </div>
+                    <!-- Card 6: Berita Terbaru -->
+                    <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-6 rounded-xl shadow-md card-hover transition duration-300">
+                        <h3 class="text-2xl font-bold text-indigo-700 mb-3">Berita & Artikel Terkini</h3>
+                        <p class="text-gray-800">Ikuti perkembangan terbaru di dunia SIG, inovasi teknologi, dan studi kasus menarik.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QGIS Section: Menggabungkan konten QGIS dari kedua file -->
+        <section id="qgis">
+            <h2 class="text-4xl font-bold text-center mb-8 text-emerald-700">Modul Pembelajaran QGIS</h2>
+            <p class="text-lg text-center text-gray-600 mb-12 italic max-w-3xl mx-auto">
+                Di sini Anda akan belajar dasar-dasar hingga teknik lanjutan menggunakan software QGIS, sebuah software SIG open-source yang gratis dan sangat populer.
+            </p>
+            <!-- Konten dari SIG.html -->
+            <div class="space-y-12 mb-12">
+                <div class="bg-white p-8 rounded-xl shadow-lg border-l-4 border-emerald-500 hover:shadow-xl transition duration-300">
+                    <h4 class="text-3xl font-bold mb-4">Modul 1: Pengenalan QGIS</h4>
+                    <p class="text-gray-600 mb-6">
+                        QGIS adalah software SIG *open-source* yang gratis dan sangat populer. Modul ini akan membantu Anda memahami fundamentalnya.
+                    </p>
+                    <div class="space-y-6">
+                        <div>
+                            <h5 class="text-xl font-semibold mb-2">1.1 Mengapa QGIS?</h5>
+                            <p class="text-gray-700">
+                                QGIS menawarkan fungsionalitas yang setara dengan software berbayar, didukung oleh komunitas global yang aktif, dan terus diperbarui dengan fitur-fitur baru.
+                            </p>
+                            <!-- Placeholder image yang diperbarui -->
+                            <img src="https://placehold.co/800x400/22c55e/ffffff?text=Antarmuka+QGIS+3.22" alt="Antarmuka QGIS 3.22" class="mt-4 rounded-lg shadow-md">
+                        </div>
+                        <div>
+                            <h5 class="text-xl font-semibold mb-2">1.2 Menginstal dan Mengenal Antarmuka</h5>
+                            <p class="text-gray-700">
+                                Ikuti langkah-langkah mudah untuk menginstal QGIS. Setelah itu, kita akan menjelajahi antarmuka utamanya: `Toolbar`, `Layer Panel`, dan `Map Canvas`.
+                            </p>
+                        </div>
+                    </div>
+                    <a href="#" class="inline-block mt-6 bg-emerald-600 text-white font-semibold py-2 px-6 rounded-full hover:bg-emerald-700 transition duration-300">Mulai Modul 1</a>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg border-l-4 border-emerald-500 hover:shadow-xl transition duration-300">
+                    <h4 class="text-3xl font-bold mb-4">Modul 2: Bekerja dengan Data Vektor</h4>
+                    <p class="text-gray-600 mb-6">
+                        Data vektor (titik, garis, poligon) adalah fondasi dari pemetaan digital. Modul ini mengajarkan cara mengolahnya.
+                    </p>
+                    <div class="space-y-6">
+                        <div>
+                            <h5 class="text-xl font-semibold mb-2">2.1 Import dan Simbologi</h5>
+                            <p class="text-gray-700">
+                                Pelajari cara menambahkan data SHP (`.shp`) ke dalam QGIS dan mengubah simbologi untuk visualisasi yang lebih baik.
+                            </p>
+                        </div>
+                        <div>
+                            <h5 class="text-xl font-semibold mb-2">2.2 Geoprocessing Dasar</h5>
+                            <p class="text-gray-700">
+                                Praktikkan tools `geoprocessing` seperti `Buffer` (untuk membuat zona penyangga) dan `Clip` (untuk memotong area data).
+                            </p>
+                            <img src="https://placehold.co/800x400/22c55e/ffffff?text=Contoh+Geoprocessing" alt="Contoh Geoprocessing" class="mt-4 rounded-lg shadow-md">
+                        </div>
+                    </div>
+                    <a href="#" class="inline-block mt-6 bg-emerald-600 text-white font-semibold py-2 px-6 rounded-full hover:bg-emerald-700 transition duration-300">Mulai Modul 2</a>
+                </div>
+            </div>
+            <!-- Konten dari index2.html -->
+            <div class="prose max-w-none bg-white p-8 rounded-xl shadow-lg mt-8">
+                <p class="text-lg text-gray-700 mb-4">QGIS (sebelumnya Quantum GIS) adalah sistem informasi geografis desktop sumber terbuka dan gratis. QGIS berjalan pada Linux, Unix, macOS, Windows, dan Android dan mendukung berbagai format data vektor, raster, dan database.</p>
+                <h3 class="text-2xl font-bold text-blue-700 mb-3">Fitur Utama QGIS:</h3>
+                <ul class="list-disc list-inside text-gray-800 mb-4">
+                    <li><span class="font-semibold">Visualisasi Data:</span> Menampilkan data geospasial dalam berbagai format, termasuk shapefile, GeoJSON, KML, dan lainnya.</li>
+                    <li><span class="font-semibold">Analisis Geospasial:</span> Alat untuk geoprocessing, analisis jaringan, analisis raster, dan banyak lagi.</li>
+                    <li><span class="font-semibold">Pembuatan Peta:</span> Desain peta berkualitas tinggi dengan simbolisasi, label, dan tata letak yang dapat disesuaikan.</li>
+                    <li><span class="font-semibold">Ekstensibilitas:</span> Ribuan plugin yang dikembangkan komunitas untuk memperluas fungsionalitas.</li>
+                    <li><span class="font-semibold">Dukungan Komunitas:</span> Komunitas pengguna dan pengembang yang aktif memberikan dukungan dan sumber daya.</li>
+                </ul>
+                <p class="text-lg text-gray-700">QGIS adalah pilihan yang sangat baik bagi individu dan organisasi yang mencari solusi SIG yang kuat tanpa biaya lisensi.</p>
+            </div>
+        </section>
+
+        <!-- ArcGIS Section: Menggabungkan konten ArcGIS dari kedua file -->
+        <section id="arcgis">
+            <h2 class="text-4xl font-bold text-center mb-8 text-blue-600">Modul Pembelajaran ArcGIS</h2>
+            <p class="text-lg text-center text-gray-600 mb-12 italic max-w-3xl mx-auto">
+                Fokus pada ArcGIS Pro. Anda akan mempelajari software profesional yang menjadi standar industri, dari platform SIG komprehensif Esri.
+            </p>
+            <!-- Konten dari SIG.html -->
+            <div class="space-y-8 mb-12">
+                <div class="bg-white p-8 rounded-xl shadow-lg border-l-4 border-blue-500 hover:shadow-xl transition duration-300">
+                    <h4 class="text-2xl font-bold mb-2">Modul 1: Pengenalan ArcGIS Pro</h4>
+                    <p class="text-gray-600 mb-4">Mengenal antarmuka dan manajemen project di ArcGIS Pro. Perbedaan dengan ArcMap.</p>
+                    <a href="#" class="inline-block bg-blue-600 text-white font-semibold py-2 px-6 rounded-full hover:bg-blue-700 transition duration-300">Mulai Modul 1</a>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg border-l-4 border-blue-500 hover:shadow-xl transition duration-300">
+                    <h4 class="text-2xl font-bold mb-2">Modul 2: Analisis Spasial Dasar</h4>
+                    <p class="text-gray-600 mb-4">Penggunaan Geoprocessing Tools seperti Intersect, Union, dan Buffer. Membuat kueri spasial.</p>
+                    <a href="#" class="inline-block bg-blue-600 text-white font-semibold py-2 px-6 rounded-full hover:bg-blue-700 transition duration-300">Mulai Modul 2</a>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg border-l-4 border-blue-500 hover:shadow-xl transition duration-300">
+                    <h4 class="text-2xl font-bold mb-2">Modul 3: Kartografi & Visualisasi</h4>
+                    <p class="text-gray-600 mb-4">Membuat simbologi yang menarik dan informatif, menambahkan label, dan membuat layout peta yang profesional.</p>
+                    <a href="#" class="inline-block bg-blue-600 text-white font-semibold py-2 px-6 rounded-full hover:bg-blue-700 transition duration-300">Mulai Modul 3</a>
+                </div>
+            </div>
+            <!-- Konten dari index2.html -->
+            <div class="prose max-w-none bg-white p-8 rounded-xl shadow-lg mt-8">
+                <p class="text-lg text-gray-700 mb-4">ArcGIS adalah platform sistem informasi geografis (SIG) yang komprehensif dari Esri. Ini adalah rangkaian produk perangkat lunak yang memungkinkan pengguna untuk membuat, mengelola, menganalisis, dan memetakan semua jenis data geografis.</p>
+                <h3 class="text-2xl font-bold text-blue-700 mb-3">Komponen Utama ArcGIS:</h3>
+                <ul class="list-disc list-inside text-gray-800 mb-4">
+                    <li><span class="font-semibold">ArcGIS Pro:</span> Aplikasi desktop SIG modern untuk visualisasi, analisis, dan pemetaan 2D/3D.</li>
+                    <li><span class="font-semibold">ArcGIS Online:</span> Platform SIG berbasis cloud untuk membuat peta web, berbagi data, dan melakukan analisis online.</li>
+                    <li><span class="font-semibold">ArcGIS Enterprise:</span> Infrastruktur SIG yang dapat di-deploy di server lokal atau cloud pribadi.</li>
+                    <li><span class="font-semibold">Aplikasi Mobile:</span> Berbagai aplikasi untuk pengumpulan data lapangan dan visualisasi.</li>
+                    <li><span class="font-semibold">Ekosistem Luas:</span> Integrasi dengan banyak aplikasi lain dan dukungan untuk pengembangan kustom.</li>
+                </ul>
+                <p class="text-lg text-gray-700">ArcGIS adalah solusi pilihan bagi banyak profesional dan organisasi besar karena kemampuannya yang skalabel dan terintegrasi.</p>
+            </div>
+        </section>
+
+        <!-- Tutorial Section: Dari SIG.html -->
+        <section id="tutorial">
+            <h2 class="text-4xl font-bold text-center mb-8 text-gray-700">Tutorial & Proyek Praktikum</h2>
+            <p class="text-lg text-center text-gray-600 mb-12 italic max-w-3xl mx-auto">
+                Terapkan ilmu yang telah Anda pelajari dengan mengerjakan proyek-proyek praktikum berikut.
+            </p>
+            <div class="space-y-8">
+                <!-- Tombol ini sekarang mengarah ke tutorial detail -->
+                <div class="bg-white p-8 rounded-xl shadow-lg border-l-4 border-gray-500 hover:shadow-xl transition duration-300">
+                    <h4 class="text-2xl font-bold mb-2">Proyek 1: Analisis Ketersediaan Air Bersih</h4>
+                    <p class="text-gray-600 mb-4">Menganalisis lokasi ideal untuk sumur bor berdasarkan kriteria tertentu. Menggunakan teknik geoprocessing dasar.</p>
+                    <a href="#tutorial-air" class="inline-block bg-gray-600 text-white font-semibold py-2 px-6 rounded-full hover:bg-gray-700 transition duration-300 nav-link">Lihat Tutorial</a>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-lg border-l-4 border-gray-500 hover:shadow-xl transition duration-300">
+                    <h4 class="text-2xl font-bold mb-2">Proyek 2: Identifikasi Jalur Evakuasi Bencana</h4>
+                    <p class="text-gray-600 mb-4">Membuat jalur evakuasi terbaik dari area rawan bencana menuju titik aman. Menggunakan data jalan dan topografi.</p>
+                    <a href="#" class="inline-block bg-gray-600 text-white font-semibold py-2 px-6 rounded-full hover:bg-gray-700 transition duration-300">Lihat Tutorial</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tutorial Detil: Proyek Analisis Ketersediaan Air Bersih -->
+        <section id="tutorial-air" class="bg-white p-8 rounded-xl shadow-lg mx-auto w-11/12">
+            <h2 class="text-4xl font-bold text-center mb-8 text-gray-700">Tutorial: Analisis Ketersediaan Air Bersih</h2>
+            <p class="text-lg text-center text-gray-600 mb-12 italic max-w-3xl mx-auto">
+                Dalam tutorial ini, kita akan menggunakan QGIS untuk menganalisis lokasi ideal untuk sumur bor.
+            </p>
+            <div class="space-y-8 max-w-4xl mx-auto">
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                    <h4 class="text-2xl font-semibold mb-2">1. Persiapan Data</h4>
+                    <p class="text-gray-700">Unduh data spasial yang diperlukan seperti data elevasi (DEM), data geologi, dan data curah hujan. Pastikan semua data memiliki sistem koordinat yang sama.</p>
+                    <div class="mt-4"></div>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                    <h4 class="text-2xl font-semibold mb-2">2. Analisis Geoprocessing</h4>
+                    <ul class="list-disc list-inside text-gray-700 space-y-2">
+                        <li>Gunakan tool `Reclassify` untuk mengelompokkan data elevasi, geologi, dan curah hujan ke dalam kategori yang sesuai.</li>
+                        <li>Gunakan tool `Raster Calculator` untuk menggabungkan hasil reclassifikasi dengan bobot tertentu.</li>
+                        <li>Area dengan nilai tertinggi akan menjadi lokasi yang paling potensial untuk sumur bor.</li>
+                    </ul>
+                    <div class="mt-4"></div>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                    <h4 class="text-2xl font-semibold mb-2">3. Visualisasi Hasil</h4>
+                    <p class="text-gray-700">Buat peta layout profesional yang menampilkan hasil analisis, legenda, dan informasi penting lainnya.</p>
+                </div>
+            </div>
+            <div class="text-center mt-10">
+                <a href="#tutorial" class="inline-block bg-blue-600 text-white font-semibold py-3 px-8 rounded-full hover:bg-blue-700 transition duration-300 nav-link">&larr; Kembali ke Daftar Tutorial</a>
+            </div>
+        </section>
+
+        <!-- Kontak Section: Dari index2.html -->
+        <section id="kontak">
+            <h2 class="text-4xl font-semibold text-blue-800 mb-4 text-center">Hubungi Kami</h2>
+            <div class="max-w-md mx-auto bg-gray-100 p-6 rounded-lg shadow-md">
+                <p class="text-lg text-gray-700 mb-4 text-center">Jika Anda memiliki pertanyaan lebih lanjut tentang Geografi SIG, QGIS, atau ArcGIS, jangan ragu untuk menghubungi kami!</p>
+                <!-- Pesan notifikasi untuk feedback pengguna -->
+                <div id="notification" class="notification hidden"></div>
+                <form id="contact-form" class="space-y-4">
+                    <div>
+                        <label for="nama" class="block text-gray-700 text-sm font-bold mb-2">Nama:</label>
+                        <input type="text" id="nama" name="nama" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Nama Anda" required>
+                    </div>
+                    <div>
+                        <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
+                        <input type="email" id="email" name="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="email@example.com" required>
+                    </div>
+                    <div>
+                        <label for="pesan" class="block text-gray-700 text-sm font-bold mb-2">Pesan:</label>
+                        <textarea id="pesan" name="pesan" rows="5" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Tulis pesan Anda di sini..." required></textarea>
+                    </div>
+                    <button type="submit" id="submit-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full transition duration-300">Kirim Pesan</button>
+                </form>
+            </div>
+            
+            <!-- Bagian untuk menampilkan pesan yang tersimpan (hanya untuk Admin) -->
+            <div id="messages-container" class="mt-12 bg-white p-6 rounded-lg shadow-lg hidden">
+                <div class="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
+                    <h3 class="text-3xl font-bold text-blue-800">Pesan Masuk (Admin)</h3>
+                    <div class="flex space-x-2">
+                        <button id="show-messages-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-full transition duration-300">Sembunyikan Pesan</button>
+                        <!-- Tombol baru untuk mengunduh pesan -->
+                        <button id="download-messages-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition duration-300">Unduh Pesan</button>
+                    </div>
+                </div>
+                <div id="messages-list" class="space-y-4">
+                    <!-- Pesan akan dimuat di sini secara dinamis oleh JavaScript -->
+                    <div class="text-center text-gray-500">Memuat pesan...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-300 p-8 mt-12 text-center">
+        <div class="container mx-auto">
+            <p>&copy; 2025 Mata Kuliah SIG. Dibuat untuk pembelajaran mahasiswa Geografi.</p>
+            <p class="mt-2 text-sm">User ID Anda: <span id="user-id">Memuat...</span></p>
+        </div>
+    </footer>
+
+    <!-- Skrip JavaScript untuk Fungsionalitas -->
+    <script type="module">
+        // Mengimpor modul Firebase yang diperlukan
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        // signInWithCustomToken dihapus karena tidak digunakan
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"; 
+        import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Konfigurasi Firebase Anda sendiri (GANTI DENGAN YANG ANDA DAPATKAN DARI FIREBASE CONSOLE)
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9l_d55H-ipJ8LLvIgB-0krVlMX_qEKHU",
+            authDomain: "website-saya-a7110.firebaseapp.com",
+            projectId: "website-saya-a7110",
+            storageBucket: "website-saya-a7110.firebasestorage.app",
+            messagingSenderId: "733901565874",
+            appId: "1:733901565874:web:f2a45705e68ab7f7a87eab"
+        };
+        const initialAuthToken = null; // Set ini ke null karena kita tidak menggunakan custom token dari Canvas
+        const appId = firebaseConfig.appId; // Ambil appId dari konfigurasi Firebase Anda
+
+        let app;
+        let db;
+        let auth;
+        let userId = null;
+        // GANTI DENGAN USER ID ANDA DARI LAPTOP UNTUK MENGIDENTIFIKASI ADMIN
+        // Contoh: let developerUid = "ID_PENGGUNA_ANDA_YANG_ASLI_DARI_LAPTOP";
+        // Anda bisa menemukan ID ini di footer website saat Anda membukanya di laptop Anda.
+        let developerUid = "iLZkUbPjhPfuxUGNakhl6MRUKsO2"; // <--- PASTIKAN INI ADALAH ID ADMIN ANDA
+        let messagesData = []; // Array untuk menyimpan data pesan
+
+        // Inisialisasi Firebase
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            console.log("Firebase: Inisialisasi aplikasi Firebase."); // DEBUGGING: Log inisialisasi
+
+            // Menangani otentikasi dan memuat data
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    // Pengguna sudah terautentikasi
+                    userId = user.uid;
+                    const userIdElement = document.getElementById('user-id');
+                    if (userIdElement) { // Pastikan elemen ada sebelum mencoba mengubah textContent
+                        userIdElement.textContent = userId;
+                    }
+                    console.log("Firebase: User terautentikasi, ID:", userId); // DEBUGGING: Log User ID
+
+                    const messagesContainer = document.getElementById("messages-container");
+                    
+                    // Hanya pengembang yang bisa melihat pesan masuk
+                    // Perbandingan langsung dengan developerUid yang sudah di-hardcode
+                    if (userId === developerUid) {
+                        messagesContainer.classList.remove("hidden");
+                        console.log("Firebase: Mode Admin aktif."); // DEBUGGING: Log mode admin
+                        
+                        const messagesRef = collection(db, `artifacts/${appId}/public/data/messages`);
+                        const q = query(messagesRef);
+
+                        // onSnapshot akan mendengarkan data secara real-time
+                        onSnapshot(q, (snapshot) => {
+                            const messagesList = document.getElementById('messages-list');
+                            if (messagesList) { // Pastikan elemen ada
+                                messagesList.innerHTML = ''; // Kosongkan daftar sebelum memuat ulang
+                            }
+                            messagesData = []; // Kosongkan array pesan
+                            
+                            if (snapshot.empty) {
+                                if (messagesList) {
+                                    messagesList.innerHTML = `<div class="text-center text-gray-500">Belum ada pesan.</div>`;
+                                }
+                                return;
+                            }
+
+                            snapshot.forEach((doc) => {
+                                const messageData = doc.data();
+                                messagesData.push(messageData); // Simpan data pesan ke array
+                                const messageElement = document.createElement('div');
+                                messageElement.className = 'bg-gray-100 p-4 rounded-lg shadow-sm border-l-4 border-blue-400';
+                                messageElement.innerHTML = `
+                                    <p class="text-gray-800 font-semibold">${messageData.nama} (<a href="mailto:${messageData.email}" class="text-blue-500 hover:underline">${messageData.email}</a>)</p>
+                                    <p class="text-gray-600 mt-2">${messageData.pesan}</p>
+                                    <p class="text-gray-400 text-xs mt-2">ID Pengirim: ${messageData.senderId}</p>
+                                    <p class="text-gray-400 text-xs">Dikirim: ${messageData.timestamp ? new Date(messageData.timestamp.seconds * 1000).toLocaleString() : 'Tanggal tidak tersedia'}</p>
+                                `;
+                                if (messagesList) {
+                                    messagesList.appendChild(messageElement);
+                                }
+                            });
+                            console.log("Firebase: Pesan dimuat, jumlah:", messagesData.length); // DEBUGGING: Log jumlah pesan
+                        }, (error) => {
+                            console.error("Error listening to messages:", error);
+                            showNotification("Gagal memuat pesan. Silakan coba lagi.", "error");
+                        });
+                    } else {
+                        // Pengunjung biasa, sembunyikan container pesan
+                        messagesContainer.classList.add("hidden");
+                        console.log("Firebase: Mode Pengunjung aktif."); // DEBUGGING: Log mode pengunjung
+                    }
+                } else {
+                    // Pengguna tidak terautentikasi, coba sign in secara anonim
+                    console.log("Firebase: Mencoba sign in anonim..."); // DEBUGGING: Log percobaan sign in
+                    try {
+                        await signInAnonymously(auth); 
+                        console.log("Firebase: Berhasil sign in anonim."); // DEBUGGING: Log sign in anonim
+                    } catch (error) {
+                        console.error("Error signing in:", error);
+                        showNotification("Gagal terhubung ke database. Silakan coba muat ulang.", "error");
+                        const userIdElement = document.getElementById('user-id');
+                        if (userIdElement) {
+                            userIdElement.textContent = "Tidak terhubung ke database.";
+                        }
+                        console.error("Firebase: Gagal sign in anonim. Error:", error.code, error.message); // DEBUGGING: Log error sign in
+                    }
+                }
+            });
+        } catch (e) {
+            console.error("Firebase initialization failed:", e);
+            const userIdElement = document.getElementById('user-id');
+            if (userIdElement) {
+                userIdElement.textContent = "Tidak terhubung ke database (perlu konfigurasi Firebase).";
+            }
+            showNotification("Fitur database tidak aktif. Harap periksa konfigurasi Firebase.", "error");
+            console.error("Firebase: Inisialisasi gagal. Error:", e.message); // DEBUGGING: Log error inisialisasi
+        }
+
+
+        // Fungsi untuk menampilkan pesan notifikasi
+        const showNotification = (message, type) => {
+            const notification = document.getElementById("notification");
+            if (!notification) { // Tambahkan cek null untuk elemen notifikasi
+                console.warn("Notification element not found.");
+                return;
+            }
+            notification.textContent = message;
+            notification.classList.remove("bg-green-500", "bg-red-500", "hidden");
+            notification.classList.add("show");
+            if (type === "success") {
+                notification.classList.add("bg-green-500");
+            } else if (type === "error") {
+                notification.classList.add("bg-red-500");
+            }
+            
+            // Sembunyikan notifikasi setelah 3 detik
+            setTimeout(() => {
+                notification.classList.remove("show");
+                setTimeout(() => {
+                     notification.classList.add("hidden");
+                }, 500); // Tunggu sampai transisi selesai
+            }, 3000);
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const navLinks = document.querySelectorAll(".nav-link");
+            const sections = document.querySelectorAll("main section");
+            const contactForm = document.getElementById("contact-form");
+            const submitButton = document.getElementById("submit-button");
+            const messagesContainer = document.getElementById("messages-container");
+            const showMessagesBtn = document.getElementById("show-messages-btn");
+            const downloadMessagesBtn = document.getElementById("download-messages-btn");
+            
+            // Sembunyikan pesan masuk saat pertama kali dimuat
+            if (messagesContainer) { // Pastikan elemen ada
+                messagesContainer.classList.add("hidden");
+            }
+
+            // Fungsi untuk menampilkan section yang sesuai
+            const showSection = (targetId) => {
+                sections.forEach(section => {
+                    section.classList.remove("active");
+                });
+                const activeSection = document.querySelector(targetId);
+                if (activeSection) {
+                    activeSection.classList.add("active");
+                }
+                console.log(`Navigasi ke: ${targetId}`); // Log untuk debugging
+            };
+
+            // Menangani klik pada link navigasi
+            navLinks.forEach(link => {
+                link.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    const targetId = e.target.getAttribute("href");
+                    showSection(targetId);
+                    window.location.hash = targetId; // Memperbarui URL hash
+                    console.log(`Link Navigasi diklik: ${targetId}`); // Log untuk debugging
+                });
+            });
+
+            // Menangani link di dalam halaman (misalnya tombol "Mulai Jelajahi")
+            const internalLinks = document.querySelectorAll("a[href^='#']");
+            internalLinks.forEach(link => {
+                link.addEventListener("click", (e) => {
+                    // Cek jika link ini adalah bagian dari navigasi utama, jangan di-scroll.
+                    const isNavLink = e.target.classList.contains("nav-link");
+                    if (!isNavLink) {
+                        e.preventDefault();
+                        const targetId = e.target.getAttribute("href");
+                        const targetElement = document.querySelector(targetId);
+                        if (targetElement) {
+                            targetElement.scrollIntoView({ behavior: 'smooth' });
+                        }
+                        console.log(`Link Internal diklik: ${targetId}`); // Log untuk debugging
+                    }
+                });
+            });
+
+            // Menangani pengiriman formulir kontak
+            contactForm.addEventListener("submit", async (e) => {
+                e.preventDefault(); // Mencegah form untuk refresh halaman
+
+                // Nonaktifkan tombol dan tampilkan loading
+                if (submitButton) { // Pastikan elemen ada
+                    submitButton.disabled = true;
+                    const originalButtonText = submitButton.innerHTML;
+                    submitButton.innerHTML = `<span class="loader"></span>`;
+                }
+
+                // Mendapatkan nilai dari input
+                const nama = document.getElementById("nama").value;
+                const email = document.getElementById("email").value;
+                const pesan = document.getElementById("pesan").value;
+
+                if (!userId || !db) { // Pastikan Firebase dan userId sudah terinisialisasi
+                    showNotification("Fitur database tidak aktif. Pesan tidak dapat dikirim.", "error");
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = originalButtonText;
+                    }
+                    return;
+                }
+
+                try {
+                    // Menambahkan dokumen baru ke koleksi publik
+                    await addDoc(collection(db, `artifacts/${appId}/public/data/messages`), {
+                        nama: nama,
+                        email: email,
+                        pesan: pesan,
+                        senderId: userId, // Menyimpan ID pengirim
+                        timestamp: serverTimestamp() // Menggunakan timestamp dari server
+                    });
+
+                    // Menampilkan pesan sukses kepada pengguna
+                    showNotification("Pesan Anda telah berhasil dikirim!", "success");
+                    console.log("Firebase: Pesan berhasil dikirim."); // DEBUGGING: Log pesan terkirim
+
+                    // Mengosongkan kolom formulir setelah berhasil
+                    contactForm.reset();
+                } catch (error) {
+                    console.error("Error adding document: ", error);
+                    showNotification("Gagal mengirim pesan. Silakan coba lagi.", "error");
+                    console.error("Firebase: Gagal mengirim pesan. Error:", error.code, error.message); // DEBUGGING: Log error kirim pesan
+                } finally {
+                    // Aktifkan kembali tombol
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = originalButtonText;
+                    }
+                }
+            });
+
+            // Menangani klik tombol "Sembunyikan/Lihat Pesan Masuk"
+            if (showMessagesBtn) { // Pastikan elemen ada
+                showMessagesBtn.addEventListener("click", () => {
+                    if (messagesContainer) {
+                        messagesContainer.classList.toggle("hidden");
+                        if (!messagesContainer.classList.contains("hidden")) {
+                            showMessagesBtn.textContent = "Sembunyikan Pesan";
+                        } else {
+                            showMessagesBtn.textContent = "Lihat Pesan";
+                        }
+                    }
+                });
+            }
+
+            // Menangani klik tombol "Unduh Pesan"
+            if (downloadMessagesBtn) { // Pastikan elemen ada
+                downloadMessagesBtn.addEventListener("click", () => {
+                    if (messagesData.length === 0) {
+                        showNotification("Tidak ada pesan untuk diunduh.", "error");
+                        return;
+                    }
+
+                    // Format data pesan ke dalam string teks
+                    const formattedMessages = messagesData.map(msg =>
+                        `----------------------------------------\n` +
+                        `Pengirim: ${msg.nama} <${msg.email}>\n` +
+                        `Pesan: ${msg.pesan}\n` +
+                        `Dikirim: ${msg.timestamp ? new Date(msg.timestamp.seconds * 1000).toLocaleString() : 'Tanggal tidak tersedia'}\n` +
+                        `ID Pengirim: ${msg.senderId}\n`
+                    ).join('');
+
+                    const fileContent = "Pesan Masuk Website SIG\n\n" + formattedMessages;
+
+                    // Membuat Blob dari konten string
+                    const blob = new Blob([fileContent], { type: 'text/plain' });
+                    
+                    // Membuat URL objek untuk Blob
+                    const url = URL.createObjectURL(blob);
+                    
+                    // Membuat elemen link sementara untuk memulai unduhan
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'Pesan_Masuk_SIG.txt';
+                    document.body.appendChild(a);
+                    a.click();
+                    
+                    // Membersihkan elemen dan URL objek setelah selesai
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+
+                    showNotification("Pesan berhasil diunduh!", "success");
+                });
+            }
+
+            // Menampilkan halaman yang sesuai jika ada hash di URL saat halaman dimuat
+            const initialHash = window.location.hash || "#home";
+            showSection(initialHash);
+        });
+    </script>
+</body>
+</html>
